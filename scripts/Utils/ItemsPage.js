@@ -81,7 +81,7 @@ itemsInfo.initItems().then(() => {
 
         try
         {
-            items = Parameters[2];
+            items = parameters[2];
         }
         catch { }
 

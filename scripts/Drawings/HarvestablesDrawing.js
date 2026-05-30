@@ -82,8 +82,8 @@ export class HarvestablesDrawing extends DrawingUtils  {
                 case 4: tier = "IV"; break;
                 case 5: tier = "V"; break;
                 case 6: tier = "VI"; break;
-                case 6: tier = "VII"; break;
-                case 6: tier = "VIII"; break;
+                case 7: tier = "VII"; break;
+                case 8: tier = "VIII"; break;
 
                 default:
                     tier = "";

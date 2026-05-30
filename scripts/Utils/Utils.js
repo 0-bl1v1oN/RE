@@ -24,7 +24,7 @@ var canvas = document.getElementById("drawCanvas");
 var context = canvas.getContext("2d");
 
 var canvasFlash = document.getElementById("flashCanvas");
-var contextFlash = canvas.getContext("2d");
+var contextFlash = canvasFlash.getContext("2d");
 
 var canvasOurPlayer = document.getElementById("ourPlayerCanvas");
 var contextOurPlayer = canvasOurPlayer .getContext("2d");
@@ -440,14 +440,18 @@ function setDrawingViews() {
     const itemsHeightValue = localStorage.getItem("itemsHeight");
 
     // Check if the values exist in local storage and handle them
+    const mainCanvasIds = ['mapCanvas', 'gridCanvas', 'drawCanvas', 'flashCanvas', 'ourPlayerCanvas'];
+    
     if (mainWindowMarginXValue !== null) {
-        document.getElementById('bottomCanvas').style.left = mainWindowMarginXValue + "px";
-        document.getElementById('drawCanvas').style.left = mainWindowMarginYValue + "px";
+        for (const canvasId of mainCanvasIds) {
+            document.getElementById(canvasId).style.left = mainWindowMarginXValue + "px";
+        }
     }
 
     if (mainWindowMarginYValue !== null) {
-        document.getElementById('drawCanvas').style.top = mainWindowMarginYValue + "px";
-        document.getElementById('bottomCanvas').style.top = mainWindowMarginYValue + "px";
+        for (const canvasId of mainCanvasIds) {
+            document.getElementById(canvasId).style.top = mainWindowMarginYValue + "px";
+        }
     }
 
     if (itemsWindowMarginXValue !== null) {
