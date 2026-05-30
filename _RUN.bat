@@ -1,10 +1,10 @@
 @echo off
-echo Running the radar
+echo Running AlbionRadar as a desktop app window
 echo.
-echo node app.js
+echo npm run desktop
 
 cd %~dp0
 
-call node app.js
+call npm run desktop
 
 pause

@@ -10,10 +10,9 @@ const { getAdapterIp } = require('./server-scripts/adapter-selector');
 
 const EventCodes = require('./scripts/Utils/EventCodesApp.js')
 
-StartRadar();
-
-function StartRadar()
+function StartRadar(options = {})
 {
+  const { openBrowser = true } = options;
   const app = express();
 
   BigInt.prototype.toJSON = function() { return this.toString() }
@@ -23,27 +22,27 @@ function StartRadar()
 
 
   app.get('/', (req, res) => {
-    const viewName = 'main/home'; 
+    const viewName = 'main/home';
     res.render('layout', { mainContent: viewName});
   });
 
   app.get('/home', (req, res) => {
-    const viewName = 'main/home'; 
+    const viewName = 'main/home';
     res.render('./layout', { mainContent: viewName});
   });
 
   app.get('/resources', (req, res) => {
-    const viewName = 'main/resources'; 
+    const viewName = 'main/resources';
     res.render('layout', { mainContent: viewName });
   });
 
   app.get('/enemies', (req, res) => {
-    const viewName = 'main/enemies'; 
+    const viewName = 'main/enemies';
     res.render('layout', { mainContent: viewName });
   });
 
   app.get('/chests', (req, res) => {
-    const viewName = 'main/chests'; 
+    const viewName = 'main/chests';
     res.render('layout', { mainContent: viewName });
   });
 
@@ -64,12 +63,12 @@ function StartRadar()
   });
 
   app.get('/ignorelist', (req, res) => {
-    const viewName = 'main/ignorelist'; 
+    const viewName = 'main/ignorelist';
     res.render('layout', { mainContent: viewName });
   });
 
   app.get('/settings', (req, res) => {
-    const viewName = 'main/settings'; 
+    const viewName = 'main/settings';
     res.render('layout', { mainContent: viewName });
   });
 
@@ -110,10 +109,11 @@ function StartRadar()
   const port = 5001;
 
 
-  app.listen(port, () => {
+  const httpServer = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-    //open(`http://localhost:${port}`);
-    require('child_process').exec(`start http://localhost:${port}`);
+    if (openBrowser) {
+      openUrl(`http://localhost:${port}`);
+    }
   });
 
 
@@ -168,18 +168,33 @@ function StartRadar()
 
   // setup Cap event listener on global level
   c.on('packet', function (nbytes, trunc) {
-    const ret = decoders.Ethernet(buffer);
-    const ipRet = decoders.IPV4(buffer, ret.offset);
-    const udpRet = decoders.UDP(buffer, ipRet.offset);
-  
-    // Slice the buffer to get the actual payload from the offset where the UDP packet data starts
-    const payload = buffer.slice(udpRet.offset, nbytes);
-  
-    // Call the asynchronous handler
-    handlePayloadAsync(payload);
+    try {
+      const ret = decoders.Ethernet(buffer);
+      const ipRet = decoders.IPV4(buffer, ret.offset);
+      const udpRet = decoders.UDP(buffer, ipRet.offset);
+
+      // Slice the buffer to get the actual payload from the offset where the UDP packet data starts
+      const payload = buffer.slice(udpRet.offset, nbytes);
+
+      // Call the asynchronous handler
+      handlePayloadAsync(payload);
+    } catch (error) {
+      console.error('Error decoding the packet:', error);
+    }
   });
 
   const server = new WebSocket.Server({ port: 5002, host: 'localhost'});
+  
+  function broadcast(code, dictonary) {
+    const message = JSON.stringify({ code, dictionary: JSON.stringify(dictonary) });
+
+    server.clients.forEach(function(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  }
+  
   server.on('listening', () => {
     manager.on('event', (dictonary) =>
     {
@@ -189,38 +204,24 @@ function StartRadar()
         case EventCodes.EventCodes.NewCharacter:
         case EventCodes.EventCodes.Leave:
         case EventCodes.EventCodes.CharacterEquipmentChanged:
-          server.clients.forEach(function(client) {
-            client.send(JSON.stringify({ code : "items", dictionary: JSON.stringify(dictonary) }));
-          });
+          broadcast("items", dictonary);
+          // Intentional fallthrough: the items window needs "items", while the main radar still needs "event".
       
         default:
-          server.clients.forEach(function(client) {
-            client.send(JSON.stringify({ code : "event", dictionary: JSON.stringify(dictonary) }));
-          });
+          broadcast("event", dictonary);
           break;
       }
-
-      /*const dictionaryDataJSON = JSON.stringify(dictonary);
-      server.clients.forEach(function(client) {
-        client.send(JSON.stringify({ code : "event", dictionary: dictionaryDataJSON }))
-      });*/
     });
 
     
     manager.on('request', (dictonary) =>
     {
-      const dictionaryDataJSON = JSON.stringify(dictonary);
-      server.clients.forEach(function(client) {
-        client.send(JSON.stringify({ code : "request", dictionary: dictionaryDataJSON }))
-      });
+      broadcast("request", dictonary);
     });
 
     manager.on('response', (dictonary) =>
     {
-      const dictionaryDataJSON = JSON.stringify(dictonary);
-      server.clients.forEach(function(client) {
-        client.send(JSON.stringify({ code : "response", dictionary: dictionaryDataJSON }))
-      });
+      broadcast("response", dictonary);
     });
   });
 
@@ -228,4 +229,31 @@ function StartRadar()
     console.log('closed')
     manager.removeAllListeners()
   })
+
+  return { app, httpServer, server, packetCapture: c, manager };
 }
+
+function openUrl(url)
+{
+  const { exec } = require('child_process');
+
+  if (process.platform === 'win32') {
+    exec(`start "" "${url}"`);
+    return;
+  }
+
+  if (process.platform === 'darwin') {
+    exec(`open "${url}"`);
+    return;
+  }
+
+  exec(`xdg-open "${url}"`);
+}
+
+if (require.main === module) {
+  StartRadar();
+}
+
+module.exports = {
+  StartRadar,
+};

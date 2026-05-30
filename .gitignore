@@ -146,3 +146,6 @@ ip.txt
 ZIP PACKAGE/
 
 HELPER PACKAGE/
+# Chromium app-mode profiles created by the desktop launcher
+.zqradar-control-profile/
+.zqradar-radar-profile/

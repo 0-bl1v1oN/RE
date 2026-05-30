@@ -2,9 +2,11 @@
   "name": "albion-zqradar",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "desktop-launcher.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "desktop": "node desktop-launcher.js"
   },
   "author": "Zeldruck",
   "license": "ISC",
