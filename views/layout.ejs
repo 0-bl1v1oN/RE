@@ -572,6 +572,10 @@
     <iframe class="radar-pip-frame" src="/drawing?pip=1" title="AlbionRadar PiP"></iframe>
     <button id="radar-pip-drag" class="radar-pip-drag" type="button" title="Перетащить радар" aria-label="Перетащить радар">⋮⋮</button>
     <button class="radar-pip-close" type="button" onclick="ToggleRadarPip();" title="Закрыть PiP" aria-label="Закрыть PiP">×</button>
+    <button class="radar-pip-resize-handle" data-resize-corner="top-left" type="button" aria-label="Изменить размер сверху слева"></button>
+    <button class="radar-pip-resize-handle" data-resize-corner="top-right" type="button" aria-label="Изменить размер сверху справа"></button>
+    <button class="radar-pip-resize-handle" data-resize-corner="bottom-left" type="button" aria-label="Изменить размер снизу слева"></button>
+    <button class="radar-pip-resize-handle" data-resize-corner="bottom-right" type="button" aria-label="Изменить размер снизу справа"></button>  
   </div>
 
   <style>
@@ -584,8 +588,8 @@
       height: 280px;
       min-width: 160px;
       min-height: 160px;
-      resize: both;
       overflow: hidden;
+      touch-action: none;
       border: 1px solid rgba(124, 92, 255, 0.45);
       border-radius: 6px;
       background: #0f1726;
@@ -603,6 +607,48 @@
       height: 100%;
       border: 0;
       background: #0f1726;
+      pointer-events: none;
+    }
+
+    .radar-pip-window::before {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      content: '';
+      cursor: move;
+    }
+
+    .radar-pip-resize-handle {
+      position: absolute;
+      z-index: 3;
+      width: 28px;
+      height: 28px;
+      background: transparent;
+      border: 0;
+    }
+
+    .radar-pip-resize-handle[data-resize-corner="top-left"] {
+      top: 0;
+      left: 0;
+      cursor: nwse-resize;
+    }
+
+    .radar-pip-resize-handle[data-resize-corner="top-right"] {
+      top: 0;
+      right: 0;
+      cursor: nesw-resize;
+    }
+
+    .radar-pip-resize-handle[data-resize-corner="bottom-left"] {
+      bottom: 0;
+      left: 0;
+      cursor: nesw-resize;
+    }
+
+    .radar-pip-resize-handle[data-resize-corner="bottom-right"] {
+      right: 0;
+      bottom: 0;
+      cursor: nwse-resize;
     }
 
     .radar-pip-drag,
@@ -621,16 +667,13 @@
     }
 
     .radar-pip-drag {
-      top: 6px;
-      left: 6px;
-      cursor: move;
-      font-weight: 700;
-      letter-spacing: -2px;
+      display: none;
     }
 
     .radar-pip-close {
       top: 6px;
       right: 6px;
+      z-index: 4;
       font-size: 18px;
     }
   </style>
@@ -705,46 +748,113 @@
       ChangeLanguage(localStorage.getItem('language') || 'RU');
     }
 
-    function InitRadarPipDrag()
+    function clamp(value, min, max)
+    {
+      return Math.max(min, Math.min(value, max));
+    }
+
+    function InitRadarPipInteractions()
     {
       const radarPip = getRadarPipElement();
-      const dragHandle = document.getElementById('radar-pip-drag');
-      if (!radarPip || !dragHandle) return;
+      if (!radarPip) return;
 
+      let action = null;
       let startX = 0;
       let startY = 0;
       let startLeft = 0;
       let startTop = 0;
+      let startWidth = 0;
+      let startHeight = 0;
+      let resizeCorner = null;
 
-      dragHandle.addEventListener('pointerdown', (event) => {
-        event.preventDefault();
+      function startInteraction(event)
+      {
+        if (event.target.closest('.radar-pip-close')) return;
+
+        const resizeHandle = event.target.closest('.radar-pip-resize-handle');
+        action = resizeHandle ? 'resize' : 'drag';
+        resizeCorner = resizeHandle ? resizeHandle.dataset.resizeCorner : null;
         startX = event.clientX;
         startY = event.clientY;
         startLeft = radarPip.offsetLeft;
         startTop = radarPip.offsetTop;
-        dragHandle.setPointerCapture(event.pointerId);
-      });
+        startWidth = radarPip.offsetWidth;
+        startHeight = radarPip.offsetHeight;
+        event.preventDefault();
+        radarPip.setPointerCapture(event.pointerId);
+      }
 
-      dragHandle.addEventListener('pointermove', (event) => {
-        if (!dragHandle.hasPointerCapture(event.pointerId)) return;
+      function movePip(event)
+      {
+        if (action !== 'drag') return;
 
         const nextLeft = startLeft + event.clientX - startX;
         const nextTop = startTop + event.clientY - startY;
         const maxLeft = window.innerWidth - radarPip.offsetWidth;
         const maxTop = window.innerHeight - radarPip.offsetHeight;
 
-        radarPip.style.left = `${Math.max(0, Math.min(nextLeft, maxLeft))}px`;
-        radarPip.style.top = `${Math.max(0, Math.min(nextTop, maxTop))}px`;
-      });
+        radarPip.style.left = `${clamp(nextLeft, 0, maxLeft)}px`;
+        radarPip.style.top = `${clamp(nextTop, 0, maxTop)}px`;
+      }
 
-      dragHandle.addEventListener('pointerup', (event) => {
-        if (dragHandle.hasPointerCapture(event.pointerId)) {
-          dragHandle.releasePointerCapture(event.pointerId);
+      function resizePip(event)
+      {
+        if (action !== 'resize') return;
+
+      const minWidth = parseInt(getComputedStyle(radarPip).minWidth, 10) || 160;
+        const minHeight = parseInt(getComputedStyle(radarPip).minHeight, 10) || 160;
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+
+        let nextLeft = startLeft;
+        let nextTop = startTop;
+        let nextWidth = startWidth;
+        let nextHeight = startHeight;
+
+        if (resizeCorner.includes('right')) {
+          nextWidth = clamp(startWidth + dx, minWidth, window.innerWidth - startLeft);
         }
+
+        if (resizeCorner.includes('bottom')) {
+          nextHeight = clamp(startHeight + dy, minHeight, window.innerHeight - startTop);
+        }
+
+        if (resizeCorner.includes('left')) {
+          nextWidth = clamp(startWidth - dx, minWidth, startLeft + startWidth);
+          nextLeft = startLeft + (startWidth - nextWidth);
+        }
+
+        if (resizeCorner.includes('top')) {
+          nextHeight = clamp(startHeight - dy, minHeight, startTop + startHeight);
+          nextTop = startTop + (startHeight - nextHeight);
+        }
+
+        radarPip.style.left = `${nextLeft}px`;
+        radarPip.style.top = `${nextTop}px`;
+        radarPip.style.width = `${nextWidth}px`;
+        radarPip.style.height = `${nextHeight}px`;
+      }
+
+      radarPip.addEventListener('pointerdown', startInteraction);
+      radarPip.addEventListener('pointermove', (event) => {
+        if (!action || !radarPip.hasPointerCapture(event.pointerId)) return;
+        movePip(event);
+        resizePip(event);
       });
+      function endInteraction(event)
+      {
+        if (radarPip.hasPointerCapture(event.pointerId)) {
+          radarPip.releasePointerCapture(event.pointerId);
+        }
+        action = null;
+        resizeCorner = null;
+      }
+
+      radarPip.addEventListener('pointerup', endInteraction);
+      radarPip.addEventListener('pointercancel', endInteraction);
     }
 
-    InitRadarPipDrag();
+    InitRadarPipInteractions();
 
     function ChangeLanguage(lang)
     {
