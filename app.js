@@ -7,13 +7,17 @@ const WebSocket = require('ws');
 const fs = require("fs");
 
 const { getAdapterIp } = require('./server-scripts/adapter-selector');
+const { openBrowserAppWindow, closeWindowProcess } = require('./server-scripts/browser-app-window');
 
 const EventCodes = require('./scripts/Utils/EventCodesApp.js')
+
+const port = 5001;
 
 function StartRadar(options = {})
 {
   const { openBrowser = true } = options;
   const app = express();
+  let radarPipProcess = null;
 
   BigInt.prototype.toJSON = function() { return this.toString() }
 
@@ -84,6 +88,31 @@ function StartRadar(options = {})
     res.render('main/drawing');
   });
 
+  app.post('/pip/open', (req, res) => {
+    try {
+      closeWindowProcess(radarPipProcess);
+      radarPipProcess = openBrowserAppWindow(`http://localhost:${port}/drawing?pip=1`, {
+        width: 280,
+        height: 280,
+        x: 120,
+        y: 120,
+        userDataDir: '.zqradar-pip-profile',
+        alwaysOnTop: true,
+        title: 'AlbionRadar PiP',
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      console.error('Failed to open PiP radar:', error);
+      res.status(500).json({ ok: false, error: error.message });
+    }
+  });
+
+  app.post('/pip/close', (req, res) => {
+    closeWindowProcess(radarPipProcess);
+    radarPipProcess = null;
+    res.json({ ok: true });
+  });
+
   app.get('/items', (req, res) => {
 
     res.render('main/drawing-items');
@@ -108,11 +137,6 @@ function StartRadar(options = {})
   app.use('/images/Flags', express.static(__dirname + '/images/Flags'));
   app.use('/sounds', express.static(__dirname + '/sounds'));
   app.use('/config', express.static(__dirname + '/config'));
-
-
-
-  const port = 5001;
-
 
   const httpServer = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
