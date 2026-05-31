@@ -568,6 +568,73 @@
     </div>
   </div>
 
+  <div id="radar-pip-window" class="radar-pip-window hidden" aria-label="AlbionRadar PiP">
+    <iframe class="radar-pip-frame" src="/drawing?pip=1" title="AlbionRadar PiP"></iframe>
+    <button id="radar-pip-drag" class="radar-pip-drag" type="button" title="Перетащить радар" aria-label="Перетащить радар">⋮⋮</button>
+    <button class="radar-pip-close" type="button" onclick="ToggleRadarPip();" title="Закрыть PiP" aria-label="Закрыть PiP">×</button>
+  </div>
+
+  <style>
+    .radar-pip-window {
+      position: fixed;
+      top: 128px;
+      left: 320px;
+      z-index: 60;
+      width: 280px;
+      height: 280px;
+      min-width: 160px;
+      min-height: 160px;
+      resize: both;
+      overflow: hidden;
+      border: 1px solid rgba(124, 92, 255, 0.45);
+      border-radius: 6px;
+      background: #0f1726;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .radar-pip-window.hidden {
+      display: none;
+    }
+
+    .radar-pip-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #0f1726;
+    }
+
+    .radar-pip-drag,
+    .radar-pip-close {
+      position: absolute;
+      z-index: 2;
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 6px;
+      color: #e7e9f5;
+      background: rgba(9, 14, 25, 0.72);
+      line-height: 24px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .radar-pip-drag {
+      top: 6px;
+      left: 6px;
+      cursor: move;
+      font-weight: 700;
+      letter-spacing: -2px;
+    }
+
+    .radar-pip-close {
+      top: 6px;
+      right: 6px;
+      font-size: 18px;
+    }
+  </style>
+
   <script>
     ChangeLanguage(localStorage.getItem('language') || 'RU');
 
@@ -607,7 +674,7 @@
       setTextIfExists('nav-launch-items-button', layout.launchItems);
       setTextIfExists('language-label', layout.language);
       setTextIfExists('connection-status', layout.connected);
-      setTextIfExists('pip-mode-button', radarPipWindow && !radarPipWindow.closed ? layout.exitPip : layout.pipMode);
+      setTextIfExists('pip-mode-button', isRadarPipOpen() ? layout.exitPip : layout.pipMode);
       document.title = layout.appTitle || 'AlbionRadar';
     }
 
@@ -618,27 +685,66 @@
       }
     }
 
-    let radarPipWindow = null;
+    function getRadarPipElement()
+    {
+      return document.getElementById('radar-pip-window');
+    }
+
+    function isRadarPipOpen()
+    {
+      const radarPip = getRadarPipElement();
+      return radarPip && !radarPip.classList.contains('hidden');
+    }
 
     function ToggleRadarPip()
     {
-      if (radarPipWindow && !radarPipWindow.closed) {
-        radarPipWindow.close();
-        radarPipWindow = null;
-        ChangeLanguage(localStorage.getItem('language') || 'RU');
-        return;
-      }
+      const radarPip = getRadarPipElement();
+      if (!radarPip) return;
 
-      radarPipWindow = window.open('/drawing?pip=1', 'AlbionRadarPiP', 'width=560,height=585,left=120,top=160,resizable=yes,scrollbars=no');
+      radarPip.classList.toggle('hidden');
       ChangeLanguage(localStorage.getItem('language') || 'RU');
     }
 
-    setInterval(() => {
-      if (radarPipWindow && radarPipWindow.closed) {
-        radarPipWindow = null;
-        ChangeLanguage(localStorage.getItem('language') || 'RU');
-      }
-    }, 1000);
+    function InitRadarPipDrag()
+    {
+      const radarPip = getRadarPipElement();
+      const dragHandle = document.getElementById('radar-pip-drag');
+      if (!radarPip || !dragHandle) return;
+
+      let startX = 0;
+      let startY = 0;
+      let startLeft = 0;
+      let startTop = 0;
+
+      dragHandle.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        startX = event.clientX;
+        startY = event.clientY;
+        startLeft = radarPip.offsetLeft;
+        startTop = radarPip.offsetTop;
+        dragHandle.setPointerCapture(event.pointerId);
+      });
+
+      dragHandle.addEventListener('pointermove', (event) => {
+        if (!dragHandle.hasPointerCapture(event.pointerId)) return;
+
+        const nextLeft = startLeft + event.clientX - startX;
+        const nextTop = startTop + event.clientY - startY;
+        const maxLeft = window.innerWidth - radarPip.offsetWidth;
+        const maxTop = window.innerHeight - radarPip.offsetHeight;
+
+        radarPip.style.left = `${Math.max(0, Math.min(nextLeft, maxLeft))}px`;
+        radarPip.style.top = `${Math.max(0, Math.min(nextTop, maxTop))}px`;
+      });
+
+      dragHandle.addEventListener('pointerup', (event) => {
+        if (dragHandle.hasPointerCapture(event.pointerId)) {
+          dragHandle.releasePointerCapture(event.pointerId);
+        }
+      });
+    }
+
+    InitRadarPipDrag();
 
     function ChangeLanguage(lang)
     {
