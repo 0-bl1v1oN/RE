@@ -1,7 +1,5 @@
 ﻿const express = require('express');
 const PhotonParser = require('./scripts/classes/PhotonPacketParser');
-var Cap = require('cap').Cap;
-var decoders = require('cap').decoders;
 const WebSocket = require('ws');
 
 const fs = require("fs");
@@ -15,9 +13,11 @@ const port = 5001;
 
 function StartRadar(options = {})
 {
-  const { openBrowser = true } = options;
+  const { openBrowser = true, onServerReady = null } = options;
   const app = express();
   let radarPipProcess = null;
+  let packetCapture = null;
+  let manager = null;
 
   BigInt.prototype.toJSON = function() { return this.toString() }
 
@@ -139,14 +139,27 @@ function StartRadar(options = {})
   app.use('/config', express.static(__dirname + '/config'));
 
   const httpServer = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-    if (openBrowser) {
-      openUrl(`http://localhost:${port}`);
+    const url = `http://localhost:${port}/home`;
+    console.log(`Server is running on ${url}`);
+
+    if (typeof onServerReady === 'function') {
+      onServerReady(url);
+    } else if (openBrowser) {
+      openUrl(url);
     }
+
+    setImmediate(initializePacketCapture);
   });
 
+  httpServer.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use. Close the other radar instance and start again.`);
+      return;
+    }
 
-  var c = new Cap();
+
+  console.error('Failed to start web server:', error);
+  });
 
   let adapterIp;
 
