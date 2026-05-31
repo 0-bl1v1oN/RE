@@ -4,7 +4,6 @@ const { spawn } = require('child_process');
 const { StartRadar } = require('./app');
 
 const APP_URL = 'http://localhost:5001/home';
-const RADAR_URL = 'http://localhost:5001/drawing';
 
 function getBrowserCandidates() {
   const candidates = [];
@@ -65,11 +64,4 @@ setTimeout(() => {
     userDataDir: '.zqradar-control-profile',
   });
 
-  openBrowserAppWindow(RADAR_URL, {
-    width: 560,
-    height: 620,
-    x: 120,
-    y: 180,
-    userDataDir: '.zqradar-radar-profile',
-  });
 }, 700);

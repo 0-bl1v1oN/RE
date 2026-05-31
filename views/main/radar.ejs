@@ -1,0 +1,184 @@
+<div class="container px-6 mx-auto grid radar-page">
+  <section class="radar-card mt-4">
+    <div class="radar-preview-wrap">
+      <iframe
+        class="radar-preview"
+        src="/drawing?embedded=1"
+        title="AlbionRadar preview"
+      ></iframe>
+    </div>
+
+    <div class="radar-controls">
+      <div class="radar-control-group">
+        <span class="radar-muted">Отображение:</span>
+        <label class="radar-inline-control">
+          <input type="checkbox" checked>
+          <span>Количество</span>
+        </label>
+        <label class="radar-inline-control">
+          <input type="checkbox">
+          <span>Дистанция</span>
+        </label>
+        <label class="radar-inline-control">
+          <input type="checkbox">
+          <span>Кластеры</span>
+        </label>
+      </div>
+
+      <div class="radar-control-group">
+        <span class="radar-muted">Масштаб:</span>
+        <button class="radar-control-button" type="button">-</button>
+        <input class="radar-range" type="range" min="40" max="120" value="60">
+        <button class="radar-control-button" type="button">+</button>
+        <span class="radar-value">60%</span>
+        <button class="radar-reset" type="button">Сброс</button>
+      </div>
+
+      <div class="radar-control-group">
+        <span class="radar-muted">Размер:</span>
+        <button class="radar-control-button" type="button">-</button>
+        <input class="radar-range" type="range" min="300" max="800" value="500">
+        <button class="radar-control-button" type="button">+</button>
+        <span class="radar-value">500px</span>
+        <button class="radar-reset" type="button">Сброс</button>
+      </div>
+
+      <div class="radar-control-group">
+        <span class="radar-muted">Иконки:</span>
+        <button class="radar-control-button" type="button">-</button>
+        <input class="radar-range" type="range" min="100" max="300" value="200">
+        <button class="radar-control-button" type="button">+</button>
+        <span class="radar-value">200%</span>
+        <button class="radar-reset" type="button">Сброс</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="radar-card players-panel">
+    <div class="players-panel-title">
+      <h2>Обнаруженные игроки</h2>
+      <label class="radar-inline-control">
+        <input type="checkbox" checked>
+        <span>Показать</span>
+      </label>
+    </div>
+
+    <div class="players-empty-state">
+      <div class="players-loader"></div>
+      <p>Игроки пока не обнаружены</p>
+      <span>Сканирование ...</span>
+    </div>
+  </section>
+</div>
+
+<style>
+  .radar-page {
+    color: #d8dee9;
+  }
+
+  .radar-card {
+    background: #0f1726;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
+  }
+
+  .radar-preview-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .radar-preview {
+    width: 500px;
+    height: 500px;
+    border: 2px solid rgba(112, 126, 154, 0.28);
+    border-radius: 8px;
+    background: #0f1726;
+  }
+
+  .radar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 18px 26px;
+    margin-top: 26px;
+    color: #93a0b8;
+    font-size: 14px;
+  }
+
+  .radar-control-group,
+  .radar-inline-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .radar-inline-control input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #7c5cff;
+  }
+
+  .radar-control-button,
+  .radar-reset {
+    color: #f7f8ff;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .radar-reset {
+    margin-left: 8px;
+  }
+
+  .radar-range {
+    width: 96px;
+    accent-color: #7c5cff;
+  }
+
+  .radar-value {
+    color: #d8dee9;
+    min-width: 44px;
+  }
+
+  .players-panel {
+    min-height: 240px;
+    margin-top: 16px;
+  }
+
+  .players-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .players-panel-title h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f2f4f8;
+  }
+
+  .players-empty-state {
+    display: flex;
+    min-height: 160px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64708a;
+  }
+
+  .players-empty-state p {
+    margin: 12px 0 2px;
+    color: #7a859d;
+  }
+
+  .players-loader {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #684cff;
+    border-radius: 999px;
+  }
+</style>

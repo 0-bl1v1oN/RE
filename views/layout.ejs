@@ -65,6 +65,19 @@
                 <span id="nav-radar-1" class="ml-4">Радар</span>
               </a>
             </li>
+            <li class="relative px-6 py-3">
+              <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/players'" aria-hidden="true"></span>
+              <a
+                :class="{'text-white': currentPath === '/players' && dark, 'text-black': currentPath === '/players' && !dark, 'hover:text-white dark:hover:text-gray-200': true, 'text-gray-800 dark:text-gray-200': currentPath !== '/players'}"
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150"
+                href="/players"
+              >
+                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m8-4a4 4 0 100-8 4 4 0 000 8zM9 10a4 4 0 100-8 4 4 0 000 8z" />
+                </svg>
+                <span id="nav-players-1" class="ml-4">Игроки</span>
+              </a>
+            </li>
           </ul>
           <ul>
             <li class="relative px-6 py-3">
@@ -183,7 +196,7 @@
                 <span id="nav-ignorelist-1" class="ml-4">Игнор-лист</span>
               </a>
             </li>
-            <!--<li class="relative px-6 py-3">
+            <li class="relative px-6 py-3">
               <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/settings'" aria-hidden="true"></span>
               <a
                 :class="{'text-white': currentPath === '/settings' && dark, 'text-black': currentPath === '/settings' && !dark, 'hover:text-white dark:hover:text-gray-200': true, 'text-gray-800 dark:text-gray-200': currentPath !== '/settings'}"
@@ -206,26 +219,6 @@
                 </svg>
                 <span id="nav-settings-1" class="ml-4">Настройки</span>
               </a>
-            </li>-->
-
-            <li class="relative px-6 py-3">
-              <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/drawing'" aria-hidden="true"></span>
-              <button
-              class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-              onclick="window.open('/drawing');"
-              >
-                <p id="nav-launch-radar-button">Открыть радар</p>
-              </button>
-            </li>
-
-            <li class="relative px-6 py-3">
-              <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/items'" aria-hidden="true"></span>
-              <button
-              class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-              onclick="window.open('/items');"
-              >
-                <p id="nav-launch-items-button">Открыть предметы</p>
-              </button>
             </li>
 
             <li class="relative px-6 py-3">
@@ -311,6 +304,19 @@
                   ></path>
                 </svg>
                 <span id="nav-radar-2" class="ml-4">Радар</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/players'" aria-hidden="true"></span>
+              <a
+                :class="{'text-white': currentPath === '/players' && dark, 'text-black': currentPath === '/players' && !dark, 'hover:text-white dark:hover:text-gray-200': true, 'text-gray-800 dark:text-gray-200': currentPath !== '/players'}"
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150"
+                href="/players"
+              >
+                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m8-4a4 4 0 100-8 4 4 0 000 8zM9 10a4 4 0 100-8 4 4 0 000 8z" />
+                </svg>
+                <span id="nav-players-2" class="ml-4">Игроки</span>
               </a>
             </li>
           </ul>
@@ -431,7 +437,7 @@
                 <span id="nav-ignorelist-2" class="ml-4">Игнор-лист</span>
               </a>
             </li>
-            <!--<li class="relative px-6 py-3">
+            <li class="relative px-6 py-3">
               <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/settings'" aria-hidden="true"></span>
               <a
               :class="{'text-white': currentPath === '/settings' && dark, 'text-black': currentPath === '/settings' && !dark, 'hover:text-white dark:hover:text-gray-200': true, 'text-gray-800 dark:text-gray-200': currentPath !== '/settings'}"
@@ -454,50 +460,6 @@
               </svg>
               <span id="nav-settings-2" class="ml-4">Настройки</span>
             </a>
-          </li>-->
-
-          <li class="relative px-6 py-3">
-            <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" x-show="currentPath === '/drawing'" aria-hidden="true"></span>
-            <a
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-              href="/Drawing"
-            >
-              <svg
-                class="w-5 h-5"
-                aria-hidden="true"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-                ></path>
-              </svg>
-              <span id="nav-launch-radar-1" class="ml-4">Открыть радар</span>
-            </a>
-          </li>
-
-          <li class="relative px-6 py-3 ">
-
-            <button
-            class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-            onclick="window.open('/drawing');"
-            >
-              <span id="nav-launch-radar-2" >Открыть радар</span>
-            </button>
-          </li>
-
-          <li class="relative px-6 py-3 ">
-
-            <button
-            class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-            onclick="window.open('/items');"
-            >
-              <span id="nav-launch-items-1" >Открыть предметы</span>
-            </button>
           </li>
         </ul>
 
@@ -531,7 +493,23 @@
           <div class="flex justify-center flex-1 lg:mr-32">
 
           </div>
-          <ul class="flex items-center flex-shrink-0 space-x-6">
+          <ul class="flex items-center flex-shrink-0 space-x-4">
+            <li>
+              <span id="connection-status" class="inline-flex items-center rounded-md bg-gray-800 bg-opacity-60 px-3 py-2 text-sm text-gray-300 dark:text-gray-300">
+                <span class="mr-2 h-2 w-2 rounded-full bg-teal-400"></span>
+                Подключено
+              </span>
+            </li>
+            <li>
+              <button
+                id="pip-mode-button"
+                class="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                type="button"
+                onclick="ToggleRadarPip();"
+              >
+                PiP режим
+              </button>
+            </li>
             <!-- Theme toggler -->
             <li class="flex">
               <button
@@ -608,6 +586,7 @@
       const layout = lang['layout'];
       const textByBaseId = {
         'nav-radar': layout.radar,
+        'nav-players': layout.players,
         'nav-resources': layout.resources,
         'nav-enemies': layout.enemies,
         'nav-chests': layout.chests,
@@ -627,6 +606,8 @@
       setTextIfExists('nav-launch-radar-button', layout.launchRadar);
       setTextIfExists('nav-launch-items-button', layout.launchItems);
       setTextIfExists('language-label', layout.language);
+      setTextIfExists('connection-status', layout.connected);
+      setTextIfExists('pip-mode-button', radarPipWindow && !radarPipWindow.closed ? layout.exitPip : layout.pipMode);
       document.title = layout.appTitle || 'AlbionRadar';
     }
 
@@ -636,6 +617,28 @@
         SetLanguage(lang);
       }
     }
+
+    let radarPipWindow = null;
+
+    function ToggleRadarPip()
+    {
+      if (radarPipWindow && !radarPipWindow.closed) {
+        radarPipWindow.close();
+        radarPipWindow = null;
+        ChangeLanguage(localStorage.getItem('language') || 'RU');
+        return;
+      }
+
+      radarPipWindow = window.open('/drawing?pip=1', 'AlbionRadarPiP', 'width=560,height=585,left=120,top=160,resizable=yes,scrollbars=no');
+      ChangeLanguage(localStorage.getItem('language') || 'RU');
+    }
+
+    setInterval(() => {
+      if (radarPipWindow && radarPipWindow.closed) {
+        radarPipWindow = null;
+        ChangeLanguage(localStorage.getItem('language') || 'RU');
+      }
+    }, 1000);
 
     function ChangeLanguage(lang)
     {

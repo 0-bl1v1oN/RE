@@ -110,6 +110,10 @@
     "settings": "Настройки",
     "launchRadar": "Открыть радар",
     "launchItems": "Открыть предметы",
-    "language": "Язык"
+    "language": "Язык",
+    "players": "Игроки",
+    "connected": "Подключено",
+    "pipMode": "PiP режим",
+    "exitPip": "Закрыть PiP"
   }
 }

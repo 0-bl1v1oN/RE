@@ -31,7 +31,7 @@ var contextOurPlayer = canvasOurPlayer .getContext("2d");
 
 
 var canvasItems = document.getElementById("thirdCanvas");
-var contextItems = canvasItems.getContext("2d");
+var contextItems = canvasItems ? canvasItems.getContext("2d") : null;
 
 import { Settings } from './Settings.js';
 const settings = new Settings();
@@ -388,6 +388,8 @@ function update() {
 
 function drawItems() {
 
+    if (!canvasItems || !contextItems) return;
+
     contextItems.clearRect(0, 0, canvasItems.width, canvasItems.height);
 
     if (settings.settingItems)
@@ -410,9 +412,12 @@ setInterval(checkLocalStorage, interval)
 
 
 
-document.getElementById("button").addEventListener("click", function () {
-    ClearHandlers();
-});
+const clearButton = document.getElementById("button");
+if (clearButton) {
+    clearButton.addEventListener("click", function () {
+        ClearHandlers();
+    });
+}
 
 function ClearHandlers()
 {
@@ -426,6 +431,10 @@ function ClearHandlers()
 }
 
 setDrawingViews();
+
+function getElement(id) {
+    return document.getElementById(id);
+}
 
 function setDrawingViews() {
     const mainWindowMarginXValue = localStorage.getItem("mainWindowMarginX");
@@ -444,49 +453,51 @@ function setDrawingViews() {
     
     if (mainWindowMarginXValue !== null) {
         for (const canvasId of mainCanvasIds) {
-            document.getElementById(canvasId).style.left = mainWindowMarginXValue + "px";
+            const canvasElement = getElement(canvasId);
+            if (canvasElement) canvasElement.style.left = mainWindowMarginXValue + "px";
         }
     }
 
     if (mainWindowMarginYValue !== null) {
         for (const canvasId of mainCanvasIds) {
-            document.getElementById(canvasId).style.top = mainWindowMarginYValue + "px";
+            const canvasElement = getElement(canvasId);
+            if (canvasElement) canvasElement.style.top = mainWindowMarginYValue + "px";
         }
     }
 
     if (itemsWindowMarginXValue !== null) {
-        document.getElementById('thirdCanvas').style.left = itemsWindowMarginXValue + "px";
+        if (canvasItems) canvasItems.style.left = itemsWindowMarginXValue + "px";
     }
 
     if (itemsWindowMarginYValue !== null) {
-        document.getElementById('thirdCanvas').style.top = itemsWindowMarginYValue + "px";
+        if (canvasItems) canvasItems.style.top = itemsWindowMarginYValue + "px";
     }
 
     if (itemsWidthValue !== null) {
-        document.getElementById('thirdCanvas').style.width = itemsWidthValue + "px";
+        if (canvasItems) canvasItems.style.width = itemsWidthValue + "px";
     }
 
     if (itemsHeightValue !== null) {
-        document.getElementById('thirdCanvas').style.height = itemsHeightValue + "px";
+        if (canvasItems) canvasItems.style.height = itemsHeightValue + "px";
     }
 
     if (settingItemsBorderValue !== null) {
         // Apply border based on the settingItemsBorderValue
         if (settingItemsBorderValue === "true") {
 
-            document.getElementById('thirdCanvas').style.border = "2px solid grey";
+            if (canvasItems) canvasItems.style.border = "2px solid grey";
         } else {
 
-            document.getElementById('thirdCanvas').style.border = "none";
+            if (canvasItems) canvasItems.style.border = "none";
         }
     }
 
     if (buttonMarginXValue !== null) {
-        document.getElementById('button').style.left = buttonMarginXValue + "px";
+        if (clearButton) clearButton.style.left = buttonMarginXValue + "px";
     }
 
     if (buttonMarginYValue !== null) {
-        document.getElementById('button').style.top = buttonMarginYValue + "px";
+        if (clearButton) clearButton.style.top = buttonMarginYValue + "px";
     }
 
 

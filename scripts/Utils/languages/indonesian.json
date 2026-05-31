@@ -110,6 +110,10 @@
     "settings": "Pengaturan",
     "launchRadar": "Buka radar",
     "launchItems": "Buka item",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "players": "Pemain",
+    "connected": "Terhubung",
+    "pipMode": "Mode PiP",
+    "exitPip": "Tutup PiP"
   }
 }

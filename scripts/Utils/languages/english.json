@@ -110,6 +110,10 @@
     "settings": "Settings",
     "launchRadar": "Open radar",
     "launchItems": "Open items",
-    "language": "Language"
+    "language": "Language",
+    "players": "Players",
+    "connected": "Connected",
+    "pipMode": "PiP mode",
+    "exitPip": "Close PiP"
   }
 }

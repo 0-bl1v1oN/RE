@@ -22,13 +22,18 @@ function StartRadar(options = {})
 
 
   app.get('/', (req, res) => {
-    const viewName = 'main/home';
+    const viewName = 'main/radar';
     res.render('layout', { mainContent: viewName});
   });
 
   app.get('/home', (req, res) => {
-    const viewName = 'main/home';
+    const viewName = 'main/radar';
     res.render('./layout', { mainContent: viewName});
+  });
+
+  app.get('/players', (req, res) => {
+    const viewName = 'main/home';
+    res.render('layout', { mainContent: viewName});
   });
 
   app.get('/resources', (req, res) => {
